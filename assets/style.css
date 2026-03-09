@@ -645,6 +645,14 @@ footer {
   font-size: 0.8rem; color: var(--text-muted);
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem;
 }
+footer .copyright {
+  width: 100%;
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
 
 /* ── Responsive ── */
 @media (max-width: 900px) {

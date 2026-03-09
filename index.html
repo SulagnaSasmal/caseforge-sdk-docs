@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CaseForge SDK — Developer Documentation</title>
+  <meta name="description" content="Official SDK documentation for the CaseForge AML platform. Install in minutes. Detect financial crime with confidence." />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>
+    (function(){var t=localStorage.getItem('cf-theme');if(t){document.documentElement.setAttribute('data-theme',t);}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}})();
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="hamburger" id="hamburger" aria-label="Open navigation">&#9776;</button>
+  <a class="site-logo" href="index.html">
+    <span class="logo-mark">CF</span>
+    <span class="logo-name">CaseForge <span class="logo-sdk">SDK</span></span>
+  </a>
+  <span class="header-version">v2.0</span>
+  <div class="header-spacer"></div>
+  <nav class="header-links">
+    <a href="quickstart.html">Quickstart</a>
+    <a href="authentication.html">Auth</a>
+    <a href="error-handling.html">Errors</a>
+    <a href="code-samples.html">Samples</a>
+    <a href="changelog.html">Changelog</a>
+  </nav>
+  <div class="header-sep"></div>
+  <a class="github-btn" href="https://github.com/SulagnaSasmal/caseforge-sdk-docs" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub
+  </a>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <a href="index.html" class="nav-item active">Introduction</a>
+      <a href="quickstart.html" class="nav-item">Quickstart</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Guides</div>
+      <a href="authentication.html" class="nav-item">Authentication</a>
+      <a href="error-handling.html" class="nav-item">Error handling</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a href="code-samples.html" class="nav-item">Code samples</a>
+      <a href="changelog.html" class="nav-item">Changelog</a>
+      <a href="migration-guide.html" class="nav-item">Migration guide</a>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <div class="hero">
+      <h1>Start detecting financial crime<br>in minutes.</h1>
+      <p>The CaseForge SDK wraps the CaseForge REST API into idiomatic Python and Node.js libraries. Create cases, screen transactions, file SARs, and manage watchlists — without writing raw HTTP calls.</p>
+      <div class="hero-actions">
+        <a href="quickstart.html" class="btn btn-primary">Get started →</a>
+        <a href="code-samples.html" class="btn btn-outline">View code samples</a>
+      </div>
+    </div>
+
+    <h2>What you can do with the SDK</h2>
+    <p>The CaseForge SDK covers the full AML case management lifecycle. You can automate high-volume transaction screening, integrate SAR filing into existing compliance workflows, and build real-time alerting on top of the CaseForge rules engine — all from your own application code.</p>
+
+    <div class="card-grid">
+      <a href="quickstart.html" class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Quickstart</div>
+        <div class="card-desc">Install the SDK, configure your API key, and create your first case — in under 10 minutes.</div>
+      </a>
+      <a href="authentication.html" class="card">
+        <div class="card-icon">🔑</div>
+        <div class="card-title">Authentication</div>
+        <div class="card-desc">API keys for development. OAuth 2.0 client credentials for production server-to-server flows.</div>
+      </a>
+      <a href="error-handling.html" class="card">
+        <div class="card-icon">🛡️</div>
+        <div class="card-title">Error handling</div>
+        <div class="card-desc">HTTP status mapping, SDK exception hierarchy, retry logic, and idempotency keys.</div>
+      </a>
+      <a href="code-samples.html" class="card">
+        <div class="card-icon">&#x1f4cb;</div>
+        <div class="card-title">Code samples</div>
+        <div class="card-desc">Python, Node.js, and cURL examples for every major operation: cases, SARs, watchlists.</div>
+      </a>
+      <a href="changelog.html" class="card">
+        <div class="card-icon">&#x1f4dd;</div>
+        <div class="card-title">Changelog</div>
+        <div class="card-desc">Release history, breaking changes, deprecations, and version migration notes.</div>
+      </a>
+      <a href="migration-guide.html" class="card">
+        <div class="card-icon">&#x1f504;</div>
+        <div class="card-title">Migration guide</div>
+        <div class="card-desc">Step-by-step instructions for upgrading from SDK v1.x to v2.0, with side-by-side diffs.</div>
+      </a>
+    </div>
+
+    <h2>Supported languages</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Language</th><th>Package</th><th>Min version</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Python</td><td><code>caseforge-sdk</code></td><td>Python 3.9+</td><td><span class="badge badge-green">Stable</span></td></tr>
+          <tr><td>Node.js</td><td><code>@caseforge/sdk</code></td><td>Node.js 18+</td><td><span class="badge badge-green">Stable</span></td></tr>
+          <tr><td>Java</td><td><code>com.caseforge:sdk</code></td><td>Java 11+ (JDK)</td><td><span class="badge badge-note">Beta</span></td></tr>
+          <tr><td>cURL</td><td>—</td><td>Any</td><td><span class="badge">REST reference</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Installation</h2>
+    <p>Install the SDK for your language using your standard package manager. No additional system dependencies are required.</p>
+
+    <div class="install-block">
+      <div class="install-tab-bar">
+        <button class="install-tab active">Python</button>
+        <button class="install-tab">Node.js</button>
+        <button class="install-tab">Java (Maven)</button>
+      </div>
+      <div class="install-panel active">
+        <pre><code>pip install caseforge-sdk</code></pre>
+      </div>
+      <div class="install-panel">
+        <pre><code>npm install @caseforge/sdk</code></pre>
+      </div>
+      <div class="install-panel">
+        <pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;com.caseforge&lt;/groupId&gt;
+  &lt;artifactId&gt;sdk&lt;/artifactId&gt;
+  &lt;version&gt;2.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+      </div>
+    </div>
+
+    <h2>Your first API call</h2>
+    <p>The following example authenticates with an API key and creates a new AML case. See the <a href="quickstart.html">Quickstart</a> for a fully annotated walkthrough.</p>
+
+    <div class="code-tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active">Python</button>
+        <button class="tab-btn">Node.js</button>
+        <button class="tab-btn">cURL</button>
+      </div>
+      <div class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> caseforge
+
+client = caseforge.Client(api_key=<span class="str">"cf_live_..."</span>)
+
+case = client.cases.create(
+    subject_id=<span class="str">"cust_7a2b4c"</span>,
+    case_type=<span class="str">"transaction_monitoring"</span>,
+    priority=<span class="str">"high"</span>,
+    summary=<span class="str">"Structuring pattern detected — 12 transactions below $10k threshold"</span>,
+)
+
+<span class="fn">print</span>(case.id)       <span class="cm"># case_9x4m1z</span>
+<span class="fn">print</span>(case.status)   <span class="cm"># open</span></code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Node.js</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> CaseForge <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="tp">CaseForge</span>({ apiKey: <span class="str">'cf_live_...'</span> });
+
+<span class="kw">const</span> aCase = <span class="kw">await</span> client.cases.create({
+  subjectId:  <span class="str">'cust_7a2b4c'</span>,
+  caseType:   <span class="str">'transaction_monitoring'</span>,
+  priority:   <span class="str">'high'</span>,
+  summary:    <span class="str">'Structuring pattern detected — 12 transactions below $10k threshold'</span>,
+});
+
+console.<span class="fn">log</span>(aCase.id);      <span class="cm">// case_9x4m1z</span>
+console.<span class="fn">log</span>(aCase.status);  <span class="cm">// open</span></code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">cURL</span><button class="code-copy">Copy</button></div>
+          <pre><code>curl -X POST https://api.caseforge.io/v2/cases \
+  -H <span class="str">"Authorization: Bearer cf_live_..."</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "subject_id": "cust_7a2b4c",
+    "case_type": "transaction_monitoring",
+    "priority": "high",
+    "summary": "Structuring pattern detected — 12 transactions below $10k threshold"
+  }'</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>Core concepts</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Concept</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Cases</strong></td><td>The primary unit of investigation. A case links a subject, a set of transactions or events, attached evidence, and a resolution outcome.</td></tr>
+          <tr><td><strong>Subjects</strong></td><td>The entity under investigation — a customer, business, or account. A subject can be linked to multiple cases across product lines.</td></tr>
+          <tr><td><strong>SARs</strong></td><td>Suspicious Activity Reports. The SDK provides structured SAR creation that maps fields directly to FinCEN Form 111 requirements.</td></tr>
+          <tr><td><strong>Alerts</strong></td><td>System-generated signals from the CaseForge rules engine. An alert can spawn a case automatically or queue for analyst review.</td></tr>
+          <tr><td><strong>Watchlists</strong></td><td>Curated lists of entities with elevated risk classifications. You can screen new subjects and transactions against watchlists in real time.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="admonition note">
+      <div class="admonition-title">API versioning</div>
+      <p>This SDK targets the CaseForge REST API v2. The base URL for all requests is <code>https://api.caseforge.io/v2/</code>. The v1 API is deprecated and will reach end-of-life on December 31, 2026. See the <a href="migration-guide.html">migration guide</a> to upgrade.</p>
+    </div>
+
+    <footer>
+      <span>&copy; 2026 CaseForge, Inc. Documentation provided under the Apache 2.0 license.</span>
+      <span>SDK v2.0 · API v2 · Last updated March 2026</span>
+    </footer>
+  </main>
+</div>
+
+<script src="assets/scripts.js"></script>
+</body>
+</html>

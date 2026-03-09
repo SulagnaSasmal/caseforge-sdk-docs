@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authentication — CaseForge SDK</title>
+  <meta name="description" content="Configure API key and OAuth 2.0 client credentials authentication for the CaseForge SDK. Includes token management, scopes, and security best practices." />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>
+    (function(){var t=localStorage.getItem('cf-theme');if(t){document.documentElement.setAttribute('data-theme',t);}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}})();
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="hamburger" id="hamburger" aria-label="Open navigation">&#9776;</button>
+  <a class="site-logo" href="index.html">
+    <span class="logo-mark">CF</span>
+    <span class="logo-name">CaseForge <span class="logo-sdk">SDK</span></span>
+  </a>
+  <span class="header-version">v2.0</span>
+  <div class="header-spacer"></div>
+  <nav class="header-links">
+    <a href="quickstart.html">Quickstart</a>
+    <a href="authentication.html" class="active">Auth</a>
+    <a href="error-handling.html">Errors</a>
+    <a href="code-samples.html">Samples</a>
+    <a href="changelog.html">Changelog</a>
+  </nav>
+  <div class="header-sep"></div>
+  <a class="github-btn" href="https://github.com/SulagnaSasmal/caseforge-sdk-docs" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub
+  </a>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <a href="index.html" class="nav-item">Introduction</a>
+      <a href="quickstart.html" class="nav-item">Quickstart</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Guides</div>
+      <a href="authentication.html" class="nav-item active">Authentication</a>
+      <a href="error-handling.html" class="nav-item">Error handling</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a href="code-samples.html" class="nav-item">Code samples</a>
+      <a href="changelog.html" class="nav-item">Changelog</a>
+      <a href="migration-guide.html" class="nav-item">Migration guide</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="index.html">CaseForge SDK</a>
+      <span class="sep">/</span>
+      <a href="#">Guides</a>
+      <span class="sep">/</span>
+      <span class="current">Authentication</span>
+    </div>
+
+    <div class="page-header">
+      <div class="page-eyebrow">Guides</div>
+      <h1 class="page-title">Authentication</h1>
+      <p class="page-desc">The CaseForge API supports two authentication methods. Use API keys for development and testing. Use OAuth 2.0 client credentials for all production server-to-server integrations.</p>
+    </div>
+
+    <h2>Choose an authentication method</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Use case</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>API key</strong></td><td>Development, scripts, testing</td><td>Local development, CI pipelines, one-off automation. Never use in a long-running production service.</td></tr>
+          <tr><td><strong>OAuth 2.0 client credentials</strong></td><td>Production server-to-server</td><td>Microservices, backend applications, and any integration running in production. Tokens expire automatically — no manual rotation required.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>API key authentication</h2>
+    <p>An API key is a static bearer token you include in the <code>Authorization</code> header of every request. The SDK handles this automatically when you set <code>CASEFORGE_API_KEY</code>.</p>
+
+    <h3>Generate an API key</h3>
+    <ol class="steps">
+      <li>Go to <strong>Dashboard → Settings → API Keys</strong>.</li>
+      <li>Select <strong>Create API key</strong>. Give the key a descriptive name (for example, <code>local-dev-2026-03</code>).</li>
+      <li>Choose a key type: <strong>Sandbox</strong> (prefix <code>cf_sand_</code>) for development, or <strong>Live</strong> (prefix <code>cf_live_</code>) for production data.</li>
+      <li>Copy the key immediately. The full key value is shown only once — if you close the dialog, you need to generate a new key.</li>
+      <li>Store the key in your environment: set <code>CASEFORGE_API_KEY</code> in your shell, <code>.env</code> file, or secrets manager.</li>
+    </ol>
+
+    <h3>Use the key in the SDK</h3>
+    <div class="code-tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active">Python</button>
+        <button class="tab-btn">Node.js</button>
+        <button class="tab-btn">cURL</button>
+      </div>
+      <div class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> caseforge
+
+<span class="cm"># The SDK reads CASEFORGE_API_KEY from the environment automatically</span>
+client = caseforge.<span class="tp">Client</span>()
+
+<span class="cm"># To supply the key programmatically (e.g. from a vault)</span>
+client = caseforge.<span class="tp">Client</span>(api_key=get_secret(<span class="str">"caseforge/api-key"</span>))</code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Node.js</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> CaseForge <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="cm">// Reads CASEFORGE_API_KEY from process.env automatically</span>
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="tp">CaseForge</span>();
+
+<span class="cm">// Or supply it from your secrets provider</span>
+<span class="kw">const</span> apiKey = <span class="kw">await</span> getSecret(<span class="str">'caseforge/api-key'</span>);
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="tp">CaseForge</span>({ apiKey });</code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">cURL</span><button class="code-copy">Copy</button></div>
+          <pre><code>curl https://api.caseforge.io/v2/cases \
+  -H <span class="str">"Authorization: Bearer cf_sand_your_key_here"</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>OAuth 2.0 client credentials</h2>
+    <p>For production integrations, use OAuth 2.0 client credentials. Your application exchanges a client ID and client secret for a short-lived access token. When the token expires, the SDK can automatically request a new one.</p>
+
+    <h3>Register an application</h3>
+    <ol class="steps">
+      <li>Go to <strong>Dashboard → Settings → Applications</strong>.</li>
+      <li>Select <strong>Create application</strong>. Enter a name and description.</li>
+      <li>Under <strong>Grant types</strong>, select <strong>Client credentials</strong>.</li>
+      <li>Select the scopes your application needs. See the <a href="#scopes">scopes reference</a> below.</li>
+      <li>Save the application. The dashboard shows your <code>client_id</code> and <code>client_secret</code>. Store both in your secrets manager before closing the dialog.</li>
+    </ol>
+
+    <h3>Request an access token</h3>
+    <p>The SDK handles token acquisition and renewal automatically. Configure it with your client credentials, and all subsequent API calls use a valid token:</p>
+
+    <div class="code-tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active">Python</button>
+        <button class="tab-btn">Node.js</button>
+        <button class="tab-btn">cURL (manual)</button>
+      </div>
+      <div class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> caseforge
+
+<span class="cm"># Configure client credentials — token management is automatic</span>
+client = caseforge.<span class="tp">Client</span>(
+    client_id=<span class="str">"app_8v3k9m"</span>,
+    client_secret=get_secret(<span class="str">"caseforge/client-secret"</span>),
+    scopes=[<span class="str">"cases:read"</span>, <span class="str">"cases:write"</span>, <span class="str">"sar:write"</span>],
+)
+
+<span class="cm"># The SDK requests a token on first use and refreshes it before expiry</span>
+cases = client.cases.list(status=<span class="str">"open"</span>)</code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Node.js</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> CaseForge <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="cm">// Configure client credentials — token management is automatic</span>
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="tp">CaseForge</span>({
+  clientId:     <span class="str">'app_8v3k9m'</span>,
+  clientSecret: <span class="kw">await</span> getSecret(<span class="str">'caseforge/client-secret'</span>),
+  scopes:       [<span class="str">'cases:read'</span>, <span class="str">'cases:write'</span>, <span class="str">'sar:write'</span>],
+});
+
+<span class="cm">// Token is acquired on first use and renewed before expiry</span>
+<span class="kw">const</span> cases = <span class="kw">await</span> client.cases.list({ status: <span class="str">'open'</span> });</code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">cURL</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="cm"># Step 1: Acquire a token</span>
+curl -X POST https://auth.caseforge.io/oauth/token \
+  -H <span class="str">"Content-Type: application/x-www-form-urlencoded"</span> \
+  -d <span class="str">"grant_type=client_credentials&amp;client_id=app_8v3k9m&amp;client_secret=YOUR_SECRET&amp;scope=cases:read+cases:write"</span>
+
+<span class="cm"># Response:</span>
+<span class="cm"># {"access_token":"eyJ...","token_type":"Bearer","expires_in":3600,"scope":"cases:read cases:write"}</span>
+
+<span class="cm"># Step 2: Use the token</span>
+curl https://api.caseforge.io/v2/cases \
+  -H <span class="str">"Authorization: Bearer eyJ..."</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3>Token lifecycle</h3>
+    <p>Access tokens expire after <strong>60 minutes</strong>. The SDK automatically requests a new token when the current one is within 5 minutes of expiry, so you don't need to handle token renewal in your application code.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>SDK behavior</th></tr></thead>
+        <tbody>
+          <tr><td>First API call</td><td>SDK requests a token and caches it in memory.</td></tr>
+          <tr><td>Token within 5 min of expiry</td><td>SDK proactively requests a new token before the next API call.</td></tr>
+          <tr><td>Token expired (401 response)</td><td>SDK requests a new token immediately and retries the original request once.</td></tr>
+          <tr><td>Client secret rotated</td><td>Restart the SDK client with the new secret — the in-memory token is discarded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="scopes">Scopes reference</h2>
+    <p>Request only the scopes your application needs. CaseForge follows the principle of least privilege — unused scopes increase your attack surface without providing value.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Scope</th><th>Grants access to</th></tr></thead>
+        <tbody>
+          <tr><td><code>cases:read</code></td><td>Read case details, case list, and case history.</td></tr>
+          <tr><td><code>cases:write</code></td><td>Create, update, assign, and close cases.</td></tr>
+          <tr><td><code>sar:read</code></td><td>Read filed SARs and SAR drafts.</td></tr>
+          <tr><td><code>sar:write</code></td><td>Create SAR drafts and submit SARs for review.</td></tr>
+          <tr><td><code>watchlist:read</code></td><td>Read watchlist entries and run screenings.</td></tr>
+          <tr><td><code>watchlist:write</code></td><td>Add, update, and remove watchlist entries.</td></tr>
+          <tr><td><code>transactions:read</code></td><td>Read transaction records and search transaction history.</td></tr>
+          <tr><td><code>subjects:read</code></td><td>Read subject profiles and risk scores.</td></tr>
+          <tr><td><code>subjects:write</code></td><td>Create and update subject profiles.</td></tr>
+          <tr><td><code>alerts:read</code></td><td>Read alerts generated by the CaseForge rules engine.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Security best practices</h2>
+
+    <div class="admonition danger">
+      <div class="admonition-title">Never hardcode credentials</div>
+      <p>Do not embed API keys or client secrets in source code, configuration files committed to version control, or container images. Use environment variables or a dedicated secrets manager (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault).</p>
+    </div>
+
+    <ul>
+      <li><strong>Rotate API keys regularly.</strong> Treat API keys like passwords — rotate them on a schedule and immediately if you suspect compromise. Go to <strong>Dashboard → Settings → API Keys</strong>, revoke the old key, and replace it atomically in your environment.</li>
+      <li><strong>Scope client credentials narrowly.</strong> Create separate OAuth applications for separate services. An analytics pipeline should not hold <code>sar:write</code> scope.</li>
+      <li><strong>Use Sandbox keys for development.</strong> Sandbox keys (prefix <code>cf_sand_</code>) have no access to live data. They cannot trigger real SAR filings or affect production case queues.</li>
+      <li><strong>Log token acquisition events.</strong> Log when your application requests a new OAuth token. Unexpected spikes in token requests can indicate a bug or a compromised credential.</li>
+      <li><strong>Use HTTPS.</strong> The CaseForge API only accepts HTTPS. Plain HTTP requests return a connection error — they are not redirected.</li>
+    </ul>
+
+    <nav class="doc-nav">
+      <a href="quickstart.html" class="doc-nav-item">
+        <span class="doc-nav-dir">← Previous</span>
+        <span class="doc-nav-label">Quickstart</span>
+      </a>
+      <a href="error-handling.html" class="doc-nav-item next">
+        <span class="doc-nav-dir">Next →</span>
+        <span class="doc-nav-label">Error handling</span>
+      </a>
+    </nav>
+
+    <footer>
+      <span>&copy; 2026 CaseForge, Inc.</span>
+      <span>SDK v2.0 · Last updated March 2026</span>
+    </footer>
+  </main>
+</div>
+
+<script src="assets/scripts.js"></script>
+</body>
+</html>

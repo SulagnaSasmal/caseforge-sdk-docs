@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Error Handling — CaseForge SDK</title>
+  <meta name="description" content="HTTP status codes, SDK exception types, retry logic, idempotency keys, and error resolution guidance for the CaseForge SDK." />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>
+    (function(){var t=localStorage.getItem('cf-theme');if(t){document.documentElement.setAttribute('data-theme',t);}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}})();
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="hamburger" id="hamburger" aria-label="Open navigation">&#9776;</button>
+  <a class="site-logo" href="index.html">
+    <span class="logo-mark">CF</span>
+    <span class="logo-name">CaseForge <span class="logo-sdk">SDK</span></span>
+  </a>
+  <span class="header-version">v2.0</span>
+  <div class="header-spacer"></div>
+  <nav class="header-links">
+    <a href="quickstart.html">Quickstart</a>
+    <a href="authentication.html">Auth</a>
+    <a href="error-handling.html" class="active">Errors</a>
+    <a href="code-samples.html">Samples</a>
+    <a href="changelog.html">Changelog</a>
+  </nav>
+  <div class="header-sep"></div>
+  <a class="github-btn" href="https://github.com/SulagnaSasmal/caseforge-sdk-docs" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub
+  </a>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <a href="index.html" class="nav-item">Introduction</a>
+      <a href="quickstart.html" class="nav-item">Quickstart</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Guides</div>
+      <a href="authentication.html" class="nav-item">Authentication</a>
+      <a href="error-handling.html" class="nav-item active">Error handling</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a href="code-samples.html" class="nav-item">Code samples</a>
+      <a href="changelog.html" class="nav-item">Changelog</a>
+      <a href="migration-guide.html" class="nav-item">Migration guide</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="index.html">CaseForge SDK</a>
+      <span class="sep">/</span>
+      <a href="#">Guides</a>
+      <span class="sep">/</span>
+      <span class="current">Error handling</span>
+    </div>
+
+    <div class="page-header">
+      <div class="page-eyebrow">Guides</div>
+      <h1 class="page-title">Error handling</h1>
+      <p class="page-desc">The SDK translates every API error into a typed exception. Catch specific exception types to handle each failure mode correctly — don't rely on string matching error messages.</p>
+    </div>
+
+    <h2>Error response schema</h2>
+    <p>Every error response from the CaseForge API follows the same JSON shape:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JSON</span><button class="code-copy">Copy</button></div>
+      <pre><code>{
+  <span class="at">"error"</span>: {
+    <span class="at">"code"</span>:    <span class="str">"case_not_found"</span>,        <span class="cm">// Machine-readable error code</span>
+    <span class="at">"message"</span>: <span class="str">"No case with ID 'case_abc123' was found in this workspace."</span>,
+    <span class="at">"param"</span>:   <span class="str">"case_id"</span>,              <span class="cm">// Which parameter caused the error (if applicable)</span>
+    <span class="at">"doc_url"</span>: <span class="str">"https://docs.caseforge.io/errors/case_not_found"</span>
+  },
+  <span class="at">"request_id"</span>: <span class="str">"req_7x2k4m9z"</span>          <span class="cm">// Include this when contacting support</span>
+}</code></pre>
+    </div>
+
+    <h2>SDK exception hierarchy</h2>
+    <p>All SDK exceptions extend <code>CaseForgeError</code>. Catch the base class to handle all API errors, or catch a specific subclass to handle a particular failure mode:</p>
+
+    <div class="code-tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active">Python</button>
+        <button class="tab-btn">Node.js</button>
+      </div>
+      <div class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python — exception hierarchy</span><button class="code-copy">Copy</button></div>
+          <pre><code>CaseForgeError                    <span class="cm"># Base class — all SDK errors</span>
+├── APIError                      <span class="cm"># HTTP 4xx/5xx from the API</span>
+│   ├── AuthenticationError       <span class="cm"># 401 — invalid or expired credentials</span>
+│   ├── PermissionError           <span class="cm"># 403 — insufficient scope</span>
+│   ├── NotFoundError             <span class="cm"># 404 — resource not found</span>
+│   ├── ConflictError             <span class="cm"># 409 — duplicate resource or state conflict</span>
+│   ├── ValidationError           <span class="cm"># 422 — request body failed validation</span>
+│   ├── RateLimitError            <span class="cm"># 429 — rate limit exceeded</span>
+│   └── ServerError               <span class="cm"># 500/503 — CaseForge infrastructure error</span>
+├── NetworkError                  <span class="cm"># Connection timeout, DNS failure, TLS error</span>
+└── TimeoutError                  <span class="cm"># Request exceeded the configured timeout</span></code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Node.js — exception hierarchy</span><button class="code-copy">Copy</button></div>
+          <pre><code>CaseForgeError                    <span class="cm">// Base class — all SDK errors</span>
+├── APIError                      <span class="cm">// HTTP 4xx/5xx from the API</span>
+│   ├── AuthenticationError       <span class="cm">// 401</span>
+│   ├── PermissionError           <span class="cm">// 403</span>
+│   ├── NotFoundError             <span class="cm">// 404</span>
+│   ├── ConflictError             <span class="cm">// 409</span>
+│   ├── ValidationError           <span class="cm">// 422</span>
+│   ├── RateLimitError            <span class="cm">// 429</span>
+│   └── ServerError               <span class="cm">// 500/503</span>
+├── NetworkError                  <span class="cm">// Connection-level errors</span>
+└── TimeoutError                  <span class="cm">// Request timed out</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>Catching exceptions</h2>
+    <div class="code-tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active">Python</button>
+        <button class="tab-btn">Node.js</button>
+      </div>
+      <div class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> caseforge
+<span class="kw">from</span> caseforge.exceptions <span class="kw">import</span> (
+    ValidationError, NotFoundError, RateLimitError, CaseForgeError
+)
+
+client = caseforge.<span class="tp">Client</span>()
+
+<span class="kw">try</span>:
+    case = client.cases.get(<span class="str">"case_invalid"</span>)
+
+<span class="kw">except</span> <span class="tp">NotFoundError</span> <span class="kw">as</span> e:
+    <span class="cm"># 404 — case ID doesn't exist or belongs to a different workspace</span>
+    <span class="fn">print</span>(<span class="str">f"Case not found: {e.error_code} — {e.message}"</span>)
+
+<span class="kw">except</span> <span class="tp">ValidationError</span> <span class="kw">as</span> e:
+    <span class="cm"># 422 — the request body failed server-side validation</span>
+    <span class="fn">print</span>(<span class="str">f"Validation failed on '{e.param}': {e.message}"</span>)
+
+<span class="kw">except</span> <span class="tp">RateLimitError</span> <span class="kw">as</span> e:
+    <span class="cm"># 429 — back off and retry after e.retry_after seconds</span>
+    <span class="fn">print</span>(<span class="str">f"Rate limited. Retry after {e.retry_after}s"</span>)
+
+<span class="kw">except</span> <span class="tp">CaseForgeError</span> <span class="kw">as</span> e:
+    <span class="cm"># Catch-all for any SDK error</span>
+    <span class="fn">print</span>(<span class="str">f"SDK error [{e.request_id}]: {e}"</span>)</code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Node.js</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> CaseForge, {
+  NotFoundError, ValidationError, RateLimitError, CaseForgeError
+} <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="tp">CaseForge</span>();
+
+<span class="kw">try</span> {
+  <span class="kw">const</span> aCase = <span class="kw">await</span> client.cases.get(<span class="str">'case_invalid'</span>);
+
+} <span class="kw">catch</span> (e) {
+  <span class="kw">if</span> (e <span class="kw">instanceof</span> <span class="tp">NotFoundError</span>) {
+    console.<span class="fn">error</span>(<span class="str">`Case not found: <span class="tp">${e.errorCode}</span>`</span>);
+
+  } <span class="kw">else if</span> (e <span class="kw">instanceof</span> <span class="tp">ValidationError</span>) {
+    console.<span class="fn">error</span>(<span class="str">`Validation failed on '<span class="tp">${e.param}</span>': <span class="tp">${e.message}</span>`</span>);
+
+  } <span class="kw">else if</span> (e <span class="kw">instanceof</span> <span class="tp">RateLimitError</span>) {
+    console.<span class="fn">error</span>(<span class="str">`Rate limited. Retry after <span class="tp">${e.retryAfter}</span>s`</span>);
+
+  } <span class="kw">else if</span> (e <span class="kw">instanceof</span> <span class="tp">CaseForgeError</span>) {
+    console.<span class="fn">error</span>(<span class="str">`SDK error [<span class="tp">${e.requestId}</span>]: <span class="tp">${e.message}</span>`</span>);
+  }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>HTTP status code reference</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Status</th><th>SDK exception</th><th>When it occurs</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-fix">400</span></td><td><code>APIError</code></td><td>Malformed request — missing fields, wrong content type.</td><td>Check request body structure against the API reference.</td></tr>
+          <tr><td><span class="badge badge-red">401</span></td><td><code>AuthenticationError</code></td><td>Missing, invalid, or expired credential.</td><td>Verify your API key or refresh your OAuth token. Check for stray whitespace when setting env vars.</td></tr>
+          <tr><td><span class="badge badge-red">403</span></td><td><code>PermissionError</code></td><td>Valid credentials, but the token lacks the required scope.</td><td>Add the needed scope when registering your OAuth application, or use a key with Workspace Admin role.</td></tr>
+          <tr><td><span class="badge badge-fix">404</span></td><td><code>NotFoundError</code></td><td>The requested resource doesn't exist, or belongs to a different workspace.</td><td>Verify the resource ID. Confirm your API key is scoped to the correct workspace.</td></tr>
+          <tr><td><span class="badge badge-dep">409</span></td><td><code>ConflictError</code></td><td>Duplicate resource — creating a case for a subject that already has an open case of the same type.</td><td>Retrieve the existing resource instead of creating a new one, or close the existing case first.</td></tr>
+          <tr><td><span class="badge badge-dep">422</span></td><td><code>ValidationError</code></td><td>Request body is syntactically valid JSON, but fails business rule validation.</td><td>Read <code>error.param</code> to identify which field failed. Common causes: <code>priority</code> out of range, date in the past, or an unsupported <code>case_type</code>.</td></tr>
+          <tr><td><span class="badge badge-break">429</span></td><td><code>RateLimitError</code></td><td>Too many requests on the Sandbox tier, or a burst above your plan limit.</td><td>Respect the <code>Retry-After</code> response header (<code>e.retry_after</code> in the SDK). Implement exponential backoff for high-volume pipelines.</td></tr>
+          <tr><td><span class="badge badge-break">500</span></td><td><code>ServerError</code></td><td>CaseForge infrastructure error.</td><td>Retry with exponential backoff. If the error persists beyond 15 minutes, check the CaseForge status page at <code>status.caseforge.io</code>.</td></tr>
+          <tr><td><span class="badge badge-break">503</span></td><td><code>ServerError</code></td><td>Service temporarily unavailable — typically a brief maintenance window.</td><td>Retry after the interval in the <code>Retry-After</code> header.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Retry logic</h2>
+    <p>The SDK includes built-in retry logic for transient failures. By default, it retries <strong>429</strong> and <strong>503</strong> responses up to two times using exponential backoff with jitter.</p>
+
+    <h3>Configure retry behavior</h3>
+    <div class="code-tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active">Python</button>
+        <button class="tab-btn">Node.js</button>
+      </div>
+      <div class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> caseforge
+
+client = caseforge.<span class="tp">Client</span>(
+    max_retries=<span class="num">3</span>,             <span class="cm"># Retry up to 3 times (default: 2)</span>
+    timeout=<span class="num">30.0</span>,              <span class="cm"># Seconds before a request times out (default: 60)</span>
+    retry_on_status=[<span class="num">429</span>, <span class="num">503</span>],  <span class="cm"># Which status codes trigger a retry</span>
+)</code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Node.js</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> CaseForge <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="tp">CaseForge</span>({
+  maxRetries:    <span class="num">3</span>,              <span class="cm">// default: 2</span>
+  timeout:       <span class="num">30_000</span>,        <span class="cm">// milliseconds, default: 60000</span>
+  retryOnStatus: [<span class="num">429</span>, <span class="num">503</span>],    <span class="cm">// default</span>
+});</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="admonition note">
+      <div class="admonition-title">Do not retry 4xx errors (except 429)</div>
+      <p>Client errors (400, 401, 403, 404, 422) indicate a problem with the request. Retrying them won't succeed and wastes rate limit budget. Only retry 429 and 5xx responses.</p>
+    </div>
+
+    <h2>Idempotency keys</h2>
+    <p>For write operations (case creation, SAR filing), include an idempotency key to make retries safe. If a request fails and you retry it with the same key, the API returns the result of the original request — rather than creating a duplicate resource.</p>
+
+    <div class="code-tabs">
+      <div class="tab-bar">
+        <button class="tab-btn active">Python</button>
+        <button class="tab-btn">Node.js</button>
+      </div>
+      <div class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> uuid
+<span class="kw">import</span> caseforge
+
+client = caseforge.<span class="tp">Client</span>()
+
+<span class="cm"># Generate a key per request attempt — store it so you can retry with the same key</span>
+idempotency_key = str(uuid.<span class="fn">uuid4</span>())
+
+case = client.cases.create(
+    subject_id=<span class="str">"cust_7a2b4c"</span>,
+    case_type=<span class="str">"transaction_monitoring"</span>,
+    priority=<span class="str">"high"</span>,
+    summary=<span class="str">"Structuring activity"</span>,
+    idempotency_key=idempotency_key,   <span class="cm"># Pass as a keyword argument</span>
+)</code></pre>
+        </div>
+      </div>
+      <div class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Node.js</span><button class="code-copy">Copy</button></div>
+          <pre><code><span class="kw">import</span> { randomUUID } <span class="kw">from</span> <span class="str">'crypto'</span>;
+<span class="kw">import</span> CaseForge <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="kw">const</span> client     = <span class="kw">new</span> <span class="tp">CaseForge</span>();
+<span class="kw">const</span> idempKey   = <span class="fn">randomUUID</span>();    <span class="cm">// Store this for retry</span>
+
+<span class="kw">const</span> aCase = <span class="kw">await</span> client.cases.create(
+  {
+    subjectId: <span class="str">'cust_7a2b4c'</span>,
+    caseType:  <span class="str">'transaction_monitoring'</span>,
+    priority:  <span class="str">'high'</span>,
+    summary:   <span class="str">'Structuring activity'</span>,
+  },
+  { idempotencyKey: idempKey },       <span class="cm">// Pass as second argument</span>
+);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <nav class="doc-nav">
+      <a href="authentication.html" class="doc-nav-item">
+        <span class="doc-nav-dir">← Previous</span>
+        <span class="doc-nav-label">Authentication</span>
+      </a>
+      <a href="code-samples.html" class="doc-nav-item next">
+        <span class="doc-nav-dir">Next →</span>
+        <span class="doc-nav-label">Code samples</span>
+      </a>
+    </nav>
+
+    <footer>
+      <span>&copy; 2026 CaseForge, Inc.</span>
+      <span>SDK v2.0 · Last updated March 2026</span>
+    </footer>
+  </main>
+</div>
+
+<script src="assets/scripts.js"></script>
+</body>
+</html>

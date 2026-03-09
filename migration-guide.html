@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migration Guide — CaseForge SDK</title>
+  <meta name="description" content="Step-by-step instructions for upgrading the CaseForge SDK from v1.x to v2.0. Includes side-by-side code comparisons for every breaking change." />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>
+    (function(){var t=localStorage.getItem('cf-theme');if(t){document.documentElement.setAttribute('data-theme',t);}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}})();
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="hamburger" id="hamburger" aria-label="Open navigation">&#9776;</button>
+  <a class="site-logo" href="index.html">
+    <span class="logo-mark">CF</span>
+    <span class="logo-name">CaseForge <span class="logo-sdk">SDK</span></span>
+  </a>
+  <span class="header-version">v2.0</span>
+  <div class="header-spacer"></div>
+  <nav class="header-links">
+    <a href="quickstart.html">Quickstart</a>
+    <a href="authentication.html">Auth</a>
+    <a href="error-handling.html">Errors</a>
+    <a href="code-samples.html">Samples</a>
+    <a href="changelog.html">Changelog</a>
+  </nav>
+  <div class="header-sep"></div>
+  <a class="github-btn" href="https://github.com/SulagnaSasmal/caseforge-sdk-docs" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub
+  </a>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <a href="index.html" class="nav-item">Introduction</a>
+      <a href="quickstart.html" class="nav-item">Quickstart</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Guides</div>
+      <a href="authentication.html" class="nav-item">Authentication</a>
+      <a href="error-handling.html" class="nav-item">Error handling</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a href="code-samples.html" class="nav-item">Code samples</a>
+      <a href="changelog.html" class="nav-item">Changelog</a>
+      <a href="migration-guide.html" class="nav-item active">Migration guide</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="index.html">CaseForge SDK</a>
+      <span class="sep">/</span>
+      <a href="#">Reference</a>
+      <span class="sep">/</span>
+      <span class="current">Migration guide</span>
+    </div>
+
+    <div class="page-header">
+      <div class="page-eyebrow">Reference</div>
+      <h1 class="page-title">Migrate from v1.x to v2.0</h1>
+      <p class="page-desc">SDK v2.0 introduces breaking changes to the authentication API, the case model, and the exception hierarchy. This guide walks you through each change with before-and-after code samples.</p>
+      <div class="page-meta">
+        <span>Estimated time: 30–60 minutes</span>
+        <span>Applies to: Python and Node.js</span>
+      </div>
+    </div>
+
+    <div class="admonition warning">
+      <div class="admonition-title">⚠ Complete all steps before deploying</div>
+      <p>SDK v1.x is <strong>not compatible</strong> with the v2 API. If you upgrade the SDK without updating your code, your application will throw exceptions at runtime. Test your upgraded integration in the Sandbox environment before deploying to production.</p>
+    </div>
+
+    <h2>Migration checklist</h2>
+    <ol class="steps">
+      <li>Update the SDK package: <code>pip install --upgrade caseforge-sdk</code> or <code>npm install @caseforge/sdk@2</code>.</li>
+      <li>Update exception import paths — <code>CaseForgeAPIError</code> → <code>APIError</code>.</li>
+      <li>Update the <code>case.type</code> field access to <code>case.case_type</code> (Python) or <code>case.caseType</code> (Node.js).</li>
+      <li>Replace <code>cases.fetch()</code> calls with <code>cases.get()</code>.</li>
+      <li>Update code that treats <code>cases.list()</code> as a plain list — it now returns an iterable.</li>
+      <li>Switch to OAuth 2.0 client credentials for production deployments (recommended, not required).</li>
+      <li>Test all case creation, update, and close flows in Sandbox.</li>
+      <li>Deploy to production.</li>
+    </ol>
+
+    <h2>Change 1 — Exception names</h2>
+    <p>All exception class names have been simplified. The <code>CaseForge</code> prefix has been dropped. The module import path is unchanged.</p>
+
+    <h3>Python</h3>
+    <div class="diff-grid">
+      <div class="diff-panel">
+        <div class="diff-label before">Before (v1.x)</div>
+        <div class="code-block">
+          <pre><code><span class="kw">from</span> caseforge.exceptions <span class="kw">import</span> (
+    CaseForgeAPIError,
+    CaseForgeRateLimitError,
+    CaseForgeNotFoundError,
+)
+
+<span class="kw">try</span>:
+    case = client.cases.get(<span class="str">"case_abc"</span>)
+<span class="kw">except</span> <span class="tp">CaseForgeNotFoundError</span> <span class="kw">as</span> e:
+    ...
+<span class="kw">except</span> <span class="tp">CaseForgeAPIError</span> <span class="kw">as</span> e:
+    ...</code></pre>
+        </div>
+      </div>
+      <div class="diff-panel">
+        <div class="diff-label after">After (v2.0)</div>
+        <div class="code-block">
+          <pre><code><span class="kw">from</span> caseforge.exceptions <span class="kw">import</span> (
+    APIError,
+    RateLimitError,
+    NotFoundError,
+)
+
+<span class="kw">try</span>:
+    case = client.cases.get(<span class="str">"case_abc"</span>)
+<span class="kw">except</span> <span class="tp">NotFoundError</span> <span class="kw">as</span> e:
+    ...
+<span class="kw">except</span> <span class="tp">APIError</span> <span class="kw">as</span> e:
+    ...</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3>Node.js</h3>
+    <div class="diff-grid">
+      <div class="diff-panel">
+        <div class="diff-label before">Before (v1.x)</div>
+        <div class="code-block">
+          <pre><code><span class="kw">import</span> {
+  CaseForgeAPIError,
+  CaseForgeRateLimitError,
+  CaseForgeNotFoundError,
+} <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="kw">try</span> {
+  ...
+} <span class="kw">catch</span> (e) {
+  <span class="kw">if</span> (e <span class="kw">instanceof</span> <span class="tp">CaseForgeNotFoundError</span>) {...}
+}</code></pre>
+        </div>
+      </div>
+      <div class="diff-panel">
+        <div class="diff-label after">After (v2.0)</div>
+        <div class="code-block">
+          <pre><code><span class="kw">import</span> {
+  APIError,
+  RateLimitError,
+  NotFoundError,
+} <span class="kw">from</span> <span class="str">'@caseforge/sdk'</span>;
+
+<span class="kw">try</span> {
+  ...
+} <span class="kw">catch</span> (e) {
+  <span class="kw">if</span> (e <span class="kw">instanceof</span> <span class="tp">NotFoundError</span>) {...}
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>Change 2 — Case type field renamed</h2>
+    <p>The <code>type</code> attribute on case objects is renamed to <code>case_type</code> (Python) / <code>caseType</code> (Node.js). This avoids shadowing Python's built-in <code>type()</code> function and improves clarity.</p>
+
+    <div class="diff-grid">
+      <div class="diff-panel">
+        <div class="diff-label before">Before (v1.x) — Python</div>
+        <div class="code-block">
+          <pre><code>case = client.cases.get(<span class="str">"case_abc"</span>)
+<span class="fn">print</span>(case.type)  <span class="cm"># transaction_monitoring</span></code></pre>
+        </div>
+      </div>
+      <div class="diff-panel">
+        <div class="diff-label after">After (v2.0) — Python</div>
+        <div class="code-block">
+          <pre><code>case = client.cases.get(<span class="str">"case_abc"</span>)
+<span class="fn">print</span>(case.case_type)  <span class="cm"># transaction_monitoring</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="diff-grid">
+      <div class="diff-panel">
+        <div class="diff-label before">Before (v1.x) — Node.js</div>
+        <div class="code-block">
+          <pre><code><span class="kw">const</span> c = <span class="kw">await</span> client.cases.get(<span class="str">'case_abc'</span>);
+console.<span class="fn">log</span>(c.type);  <span class="cm">// transaction_monitoring</span></code></pre>
+        </div>
+      </div>
+      <div class="diff-panel">
+        <div class="diff-label after">After (v2.0) — Node.js</div>
+        <div class="code-block">
+          <pre><code><span class="kw">const</span> c = <span class="kw">await</span> client.cases.get(<span class="str">'case_abc'</span>);
+console.<span class="fn">log</span>(c.caseType);  <span class="cm">// transaction_monitoring</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>Change 3 — cases.fetch() removed</h2>
+    <p><code>cases.fetch()</code>, deprecated in v1.3, is removed in v2.0. Replace all calls with <code>cases.get()</code>. The signature is identical.</p>
+
+    <div class="diff-grid">
+      <div class="diff-panel">
+        <div class="diff-label before">Before</div>
+        <div class="code-block">
+          <pre><code>case = client.cases.fetch(<span class="str">"case_abc"</span>)</code></pre>
+        </div>
+      </div>
+      <div class="diff-panel">
+        <div class="diff-label after">After</div>
+        <div class="code-block">
+          <pre><code>case = client.cases.get(<span class="str">"case_abc"</span>)</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h2>Change 4 — cases.list() returns an iterable</h2>
+    <p><code>cases.list()</code> now returns a lazy-paginating <code>CasePage</code> object instead of a plain list. In most situations the behavior is identical — you can iterate over it with a <code>for</code> loop. If your code accesses items by index or calls <code>len()</code>, wrap the result.</p>
+
+    <div class="diff-grid">
+      <div class="diff-panel">
+        <div class="diff-label before">Before — index access</div>
+        <div class="code-block">
+          <pre><code>cases = client.cases.list(status=<span class="str">"open"</span>)
+first = cases[<span class="num">0</span>]           <span class="cm"># worked in v1.x</span>
+total = <span class="fn">len</span>(cases)         <span class="cm"># worked in v1.x</span></code></pre>
+        </div>
+      </div>
+      <div class="diff-panel">
+        <div class="diff-label after">After — explicit conversion</div>
+        <div class="code-block">
+          <pre><code>cases = <span class="fn">list</span>(client.cases.list(status=<span class="str">"open"</span>))
+first = cases[<span class="num">0</span>]           <span class="cm"># works after list() conversion</span>
+total = <span class="fn">len</span>(cases)         <span class="cm"># works after list() conversion</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="admonition tip">
+      <div class="admonition-title">Prefer iteration over conversion</div>
+      <p>If you're processing a large result set, iterate over the <code>CasePage</code> object directly rather than converting to a list. <code>CasePage</code> fetches subsequent pages on demand, which keeps memory usage constant regardless of result count.</p>
+    </div>
+
+    <h2>Validate your migration</h2>
+    <p>Run the following commands to confirm your integration works correctly against the Sandbox API after upgrading:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell — Python</span><button class="code-copy">Copy</button></div>
+      <pre><code><span class="cm"># Set a Sandbox key (prefix cf_sand_)</span>
+export CASEFORGE_API_KEY=cf_sand_your_key_here
+
+<span class="cm"># Run your test suite</span>
+pytest tests/integration/ -v
+
+<span class="cm"># Or run a quick smoke test</span>
+python -c <span class="str">"
+import caseforge
+c = caseforge.Client()
+case = c.cases.create(subject_id='test_subj', case_type='transaction_monitoring', priority='low', summary='Migration smoke test')
+print('Created:', case.id, case.case_type, case.status)
+c.cases.update(case.id, status='closed', resolution='false_positive')
+print('Closed OK')
+"</span></code></pre>
+    </div>
+
+    <div class="admonition success">
+      <div class="admonition-title">✓ Migration complete</div>
+      <p>When all integration tests pass against Sandbox, deploy to production. Monitor your error logs for any <code>APIError</code> or <code>ValidationError</code> exceptions during the first 24 hours — these indicate fields or patterns that need additional updates.</p>
+    </div>
+
+    <nav class="doc-nav">
+      <a href="changelog.html" class="doc-nav-item">
+        <span class="doc-nav-dir">← Previous</span>
+        <span class="doc-nav-label">Changelog</span>
+      </a>
+      <a href="index.html" class="doc-nav-item next">
+        <span class="doc-nav-dir">↑ Back to top</span>
+        <span class="doc-nav-label">Introduction</span>
+      </a>
+    </nav>
+
+    <footer>
+      <span>&copy; 2026 CaseForge, Inc.</span>
+      <span>SDK v2.0 · Last updated March 2026</span>
+    </footer>
+  </main>
+</div>
+
+<script src="assets/scripts.js"></script>
+</body>
+</html>

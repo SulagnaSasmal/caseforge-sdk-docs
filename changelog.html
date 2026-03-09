@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog — CaseForge SDK</title>
+  <meta name="description" content="Full release history for the CaseForge SDK. Includes breaking changes, new features, bug fixes, and deprecation notices." />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script>
+    (function(){var t=localStorage.getItem('cf-theme');if(t){document.documentElement.setAttribute('data-theme',t);}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}})();
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <button class="hamburger" id="hamburger" aria-label="Open navigation">&#9776;</button>
+  <a class="site-logo" href="index.html">
+    <span class="logo-mark">CF</span>
+    <span class="logo-name">CaseForge <span class="logo-sdk">SDK</span></span>
+  </a>
+  <span class="header-version">v2.0</span>
+  <div class="header-spacer"></div>
+  <nav class="header-links">
+    <a href="quickstart.html">Quickstart</a>
+    <a href="authentication.html">Auth</a>
+    <a href="error-handling.html">Errors</a>
+    <a href="code-samples.html">Samples</a>
+    <a href="changelog.html" class="active">Changelog</a>
+  </nav>
+  <div class="header-sep"></div>
+  <a class="github-btn" href="https://github.com/SulagnaSasmal/caseforge-sdk-docs" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub
+  </a>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-label">Overview</div>
+      <a href="index.html" class="nav-item">Introduction</a>
+      <a href="quickstart.html" class="nav-item">Quickstart</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Guides</div>
+      <a href="authentication.html" class="nav-item">Authentication</a>
+      <a href="error-handling.html" class="nav-item">Error handling</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a href="code-samples.html" class="nav-item">Code samples</a>
+      <a href="changelog.html" class="nav-item active">Changelog</a>
+      <a href="migration-guide.html" class="nav-item">Migration guide</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="breadcrumb">
+      <a href="index.html">CaseForge SDK</a>
+      <span class="sep">/</span>
+      <a href="#">Reference</a>
+      <span class="sep">/</span>
+      <span class="current">Changelog</span>
+    </div>
+
+    <div class="page-header">
+      <div class="page-eyebrow">Reference</div>
+      <h1 class="page-title">Changelog</h1>
+      <p class="page-desc">All notable changes to the CaseForge SDK, in reverse chronological order. Breaking changes are marked <span class="badge badge-break">Breaking</span>. Deprecated features are marked <span class="badge badge-dep">Deprecated</span>.</p>
+    </div>
+
+    <div class="admonition note">
+      <div class="admonition-title">Upgrading from v1.x?</div>
+      <p>The v2.0 release contains breaking changes to authentication, the case model, and the exception hierarchy. See the <a href="migration-guide.html">migration guide</a> for a step-by-step upgrade path.</p>
+    </div>
+
+    <!-- ── v2.0.0 ── -->
+    <div class="release">
+      <div class="release-header">
+        <span class="release-version">v2.0.0</span>
+        <span class="release-date">March 2026</span>
+        <span class="badge badge-break">Major release</span>
+      </div>
+      <div class="release-body">
+        <ul class="change-list">
+          <li>
+            <span class="badge badge-break">Breaking</span>
+            <span>Authentication: <code>api_key</code> parameter renamed to match environment variable (<code>api_key=</code> still works but logs a deprecation warning). OAuth 2.0 client credentials are now the recommended auth method for production — see the <a href="authentication.html">authentication guide</a>.</span>
+          </li>
+          <li>
+            <span class="badge badge-break">Breaking</span>
+            <span>Case model: <code>case.type</code> renamed to <code>case.case_type</code> (Python) / <code>case.caseType</code> (Node.js) to avoid shadowing Python's built-in <code>type</code>. All serialized JSON uses <code>case_type</code>.</span>
+          </li>
+          <li>
+            <span class="badge badge-break">Breaking</span>
+            <span>Exception hierarchy: <code>CaseForgeAPIError</code> renamed to <code>APIError</code>. <code>CaseForgeRateLimitError</code> renamed to <code>RateLimitError</code>. All exceptions now live under <code>caseforge.exceptions</code> (Python) or the root module (Node.js).</span>
+          </li>
+          <li>
+            <span class="badge badge-break">Breaking</span>
+            <span><code>cases.list()</code> now returns an iterable object instead of a plain list. Use <code>list(cases)</code> in Python or spread (<code>[...cases]</code>) in Node.js if you need random access.</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>SAR filing API: <code>client.sars.create()</code> and <code>client.sars.submit()</code> — structured FinCEN Form 111 field mapping with server-side validation.</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Watchlist screening: <code>client.watchlists.screen()</code> — screen entities against all active watchlists in a single call, with confidence scoring.</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Transaction search: <code>client.transactions.search()</code> — full-text and field-level search across a subject's transaction history.</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Idempotency key support on all write operations. Pass <code>idempotency_key=</code> (Python) or <code>idempotencyKey:</code> (Node.js) to make retries safe.</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>TypeScript: Full type definitions are now bundled with the Node.js package. <code>@types/caseforge</code> is no longer needed.</span>
+          </li>
+          <li>
+            <span class="badge badge-fix">Fixed</span>
+            <span>Pagination: <code>cases.list()</code> cursor pagination no longer skips the last item on page boundaries when <code>limit</code> is an exact multiple of the page size.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── v1.3.0 ── -->
+    <div class="release">
+      <div class="release-header">
+        <span class="release-version">v1.3.0</span>
+        <span class="release-date">February 2026</span>
+      </div>
+      <div class="release-body">
+        <ul class="change-list">
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Built-in retry logic for 429 and 503 responses. Configure with <code>max_retries=</code> (default: 2) and <code>retry_backoff_factor=</code> (default: 0.5).</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Case history endpoint: <code>client.cases.history(case_id)</code> returns a full audit trail of status changes, notes, and assignments.</span>
+          </li>
+          <li>
+            <span class="badge badge-dep">Deprecated</span>
+            <span><code>client.cases.fetch()</code> is deprecated. Use <code>client.cases.get()</code> instead. <code>fetch()</code> will be removed in v2.0.</span>
+          </li>
+          <li>
+            <span class="badge badge-fix">Fixed</span>
+            <span>Node.js: Fix a race condition in token refresh where two concurrent requests could both attempt to acquire a new OAuth token simultaneously.</span>
+          </li>
+          <li>
+            <span class="badge badge-fix">Fixed</span>
+            <span>Python: <code>ValidationError.param</code> now correctly returns <code>None</code> instead of raising <code>AttributeError</code> when the error is not field-specific.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── v1.2.1 ── -->
+    <div class="release">
+      <div class="release-header">
+        <span class="release-version">v1.2.1</span>
+        <span class="release-date">January 2026</span>
+        <span class="badge">Patch</span>
+      </div>
+      <div class="release-body">
+        <ul class="change-list">
+          <li>
+            <span class="badge badge-fix">Fixed</span>
+            <span>Python: <code>cases.create()</code> raised a <code>KeyError</code> when the API response did not include the optional <code>assigned_to</code> field. The field now defaults to <code>None</code>.</span>
+          </li>
+          <li>
+            <span class="badge badge-fix">Fixed</span>
+            <span>Node.js: <code>timeout</code> configuration value was ignored when using OAuth authentication. Timeout is now applied to both the token request and the subsequent API call.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── v1.2.0 ── -->
+    <div class="release">
+      <div class="release-header">
+        <span class="release-version">v1.2.0</span>
+        <span class="release-date">January 2026</span>
+      </div>
+      <div class="release-body">
+        <ul class="change-list">
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Case tagging: <code>cases.create()</code> and <code>cases.update()</code> now accept a <code>tags</code> list for classification and search filtering.</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Bulk case closure: <code>client.cases.close_bulk(case_ids, resolution=)</code> closes up to 100 cases in a single API call.</span>
+          </li>
+          <li>
+            <span class="badge badge-fix">Fixed</span>
+            <span>Python: Resolved a <code>UnicodeDecodeError</code> when case summaries contained non-ASCII characters in the response body on Windows.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── v1.1.0 ── -->
+    <div class="release">
+      <div class="release-header">
+        <span class="release-version">v1.1.0</span>
+        <span class="release-date">December 2025</span>
+      </div>
+      <div class="release-body">
+        <ul class="change-list">
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Case assignment: <code>cases.assign(case_id, analyst_id)</code> and <code>cases.unassign(case_id)</code> — dedicated methods for queue management.</span>
+          </li>
+          <li>
+            <span class="badge badge-new">New</span>
+            <span>Python: The SDK now supports Python 3.9, 3.10, 3.11, and 3.12. Python 3.8 is no longer supported.</span>
+          </li>
+          <li>
+            <span class="badge badge-fix">Fixed</span>
+            <span>Requests to paginated list endpoints no longer include a redundant <code>offset=0</code> query parameter on the first page.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── v1.0.0 ── -->
+    <div class="release">
+      <div class="release-header">
+        <span class="release-version">v1.0.0</span>
+        <span class="release-date">November 2025</span>
+        <span class="badge badge-green">Initial release</span>
+      </div>
+      <div class="release-body">
+        <ul class="change-list">
+          <li><span class="badge badge-new">New</span><span>Initial SDK release for Python 3.9+ and Node.js 18+.</span></li>
+          <li><span class="badge badge-new">New</span><span>Case management: create, get, list, update, and close cases.</span></li>
+          <li><span class="badge badge-new">New</span><span>Subject management: create and retrieve subject profiles.</span></li>
+          <li><span class="badge badge-new">New</span><span>API key authentication with environment variable support.</span></li>
+          <li><span class="badge badge-new">New</span><span>Full typed exception hierarchy with <code>request_id</code> on every error for support escalation.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <nav class="doc-nav">
+      <a href="code-samples.html" class="doc-nav-item">
+        <span class="doc-nav-dir">← Previous</span>
+        <span class="doc-nav-label">Code samples</span>
+      </a>
+      <a href="migration-guide.html" class="doc-nav-item next">
+        <span class="doc-nav-dir">Next →</span>
+        <span class="doc-nav-label">Migration guide</span>
+      </a>
+    </nav>
+
+    <footer>
+      <span>&copy; 2026 CaseForge, Inc.</span>
+      <span>SDK v2.0 · Last updated March 2026</span>
+    </footer>
+  </main>
+</div>
+
+<script src="assets/scripts.js"></script>
+</body>
+</html>
